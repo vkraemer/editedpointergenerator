@@ -235,7 +235,7 @@ class Batcher(object):
 
     # Initialize a queue of Batches waiting to be used, and a queue of Examples waiting to be batched
     self._batch_queue = queue.Queue(self.BATCH_QUEUE_MAX)
-    self._example_queue = queue.Queue(self.BATCH_QUEUE_MAX * self._hps.batch_size)
+    self._example_queue = queue.Queue(self.BATCH_QUEUE_MAX * self._hps.batch_size.value)
 
     # Different settings depending on whether we're in single_pass mode or not
     if single_pass:
@@ -316,14 +316,14 @@ class Batcher(object):
       if self._hps.mode != 'decode':
         # Get bucketing_cache_size-many batches of Examples into a list, then sort
         inputs = []
-        for _ in xrange(self._hps.batch_size * self._bucketing_cache_size):
+        for _ in xrange(self._hps.batch_size.vaule * self._bucketing_cache_size):
           inputs.append(self._example_queue.get())
         inputs = sorted(inputs, key=lambda inp: inp.enc_len) # sort by length of encoder sequence
 
         # Group the sorted Examples into batches, optionally shuffle the batches, and place in the batch queue.
         batches = []
-        for i in xrange(0, len(inputs), self._hps.batch_size):
-          batches.append(inputs[i:i + self._hps.batch_size])
+        for i in xrange(0, len(inputs), self._hps.batch_size.value):
+          batches.append(inputs[i:i + self._hps.batch_size.value])
         if not self._single_pass:
           shuffle(batches)
         for b in batches:  # each b is a list of Example objects
@@ -331,7 +331,7 @@ class Batcher(object):
 
       else: # beam search decode mode
         ex = self._example_queue.get()
-        b = [ex for _ in xrange(self._hps.batch_size)]
+        b = [ex for _ in xrange(self._hps.batch_size.value)]
         self._batch_queue.put(Batch(b, self._hps, self._vocab))
 
 
