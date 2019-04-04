@@ -32,45 +32,45 @@ from tensorflow.python import debug as tf_debug
 FLAGS = tf.flags.FLAGS
 
 # Where to find data
-tf.flag.DEFINE_string('data_path', '', 'Path expression to tf.Example datafiles. Can include wildcards to access multiple datafiles.')
-tf.flag.DEFINE_string('vocab_path', '', 'Path expression to text vocabulary file.')
+tf.flags.DEFINE_string('data_path', '', 'Path expression to tf.Example datafiles. Can include wildcards to access multiple datafiles.')
+tf.flags.DEFINE_string('vocab_path', '', 'Path expression to text vocabulary file.')
 
 # Important settings
-tf.flag.DEFINE_string('mode', 'train', 'must be one of train/eval/decode')
-tf.flag.DEFINE_boolean('single_pass', False, 'For decode mode only. If True, run eval on the full dataset using a fixed checkpoint, i.e. take the current checkpoint, and use it to produce one summary for each example in the dataset, write the summaries to file and then get ROUGE scores for the whole dataset. If False (default), run concurrent decoding, i.e. repeatedly load latest checkpoint, use it to produce summaries for randomly-chosen examples and log the results to screen, indefinitely.')
+tf.flags.DEFINE_string('mode', 'train', 'must be one of train/eval/decode')
+tf.flags.DEFINE_boolean('single_pass', False, 'For decode mode only. If True, run eval on the full dataset using a fixed checkpoint, i.e. take the current checkpoint, and use it to produce one summary for each example in the dataset, write the summaries to file and then get ROUGE scores for the whole dataset. If False (default), run concurrent decoding, i.e. repeatedly load latest checkpoint, use it to produce summaries for randomly-chosen examples and log the results to screen, indefinitely.')
 
 # Where to save output
-tf.flag.DEFINE_string('log_root', '', 'Root directory for all logging.')
-tf.flag.DEFINE_string('exp_name', '', 'Name for experiment. Logs will be saved in a directory with this name, under log_root.')
+tf.flags.DEFINE_string('log_root', '', 'Root directory for all logging.')
+tf.flags.DEFINE_string('exp_name', '', 'Name for experiment. Logs will be saved in a directory with this name, under log_root.')
 
 # Hyperparameters
-tf.flag.DEFINE_integer('hidden_dim', 256, 'dimension of RNN hidden states')
-tf.flag.DEFINE_integer('emb_dim', 128, 'dimension of word embeddings')
-tf.flag.DEFINE_integer('batch_size', 16, 'minibatch size')
-tf.flag.DEFINE_integer('max_enc_steps', 400, 'max timesteps of encoder (max source text tokens)')
-tf.flag.DEFINE_integer('max_dec_steps', 100, 'max timesteps of decoder (max summary tokens)')
-tf.flag.DEFINE_integer('beam_size', 4, 'beam size for beam search decoding.')
-tf.flag.DEFINE_integer('min_dec_steps', 35, 'Minimum sequence length of generated summary. Applies only for beam search decoding mode')
-tf.flag.DEFINE_integer('vocab_size', 50000, 'Size of vocabulary. These will be read from the vocabulary file in order. If the vocabulary file contains fewer words than this number, or if this number is set to 0, will take all words in the vocabulary file.')
-tf.flag.DEFINE_float('lr', 0.15, 'learning rate')
-tf.flag.DEFINE_float('adagrad_init_acc', 0.1, 'initial accumulator value for Adagrad')
-tf.flag.DEFINE_float('rand_unif_init_mag', 0.02, 'magnitude for lstm cells random uniform inititalization')
-tf.flag.DEFINE_float('trunc_norm_init_std', 1e-4, 'std of trunc norm init, used for initializing everything else')
-tf.flag.DEFINE_float('max_grad_norm', 2.0, 'for gradient clipping')
+tf.flags.DEFINE_integer('hidden_dim', 256, 'dimension of RNN hidden states')
+tf.flags.DEFINE_integer('emb_dim', 128, 'dimension of word embeddings')
+tf.flags.DEFINE_integer('batch_size', 16, 'minibatch size')
+tf.flags.DEFINE_integer('max_enc_steps', 400, 'max timesteps of encoder (max source text tokens)')
+tf.flags.DEFINE_integer('max_dec_steps', 100, 'max timesteps of decoder (max summary tokens)')
+tf.flags.DEFINE_integer('beam_size', 4, 'beam size for beam search decoding.')
+tf.flags.DEFINE_integer('min_dec_steps', 35, 'Minimum sequence length of generated summary. Applies only for beam search decoding mode')
+tf.flags.DEFINE_integer('vocab_size', 50000, 'Size of vocabulary. These will be read from the vocabulary file in order. If the vocabulary file contains fewer words than this number, or if this number is set to 0, will take all words in the vocabulary file.')
+tf.flags.DEFINE_float('lr', 0.15, 'learning rate')
+tf.flags.DEFINE_float('adagrad_init_acc', 0.1, 'initial accumulator value for Adagrad')
+tf.flags.DEFINE_float('rand_unif_init_mag', 0.02, 'magnitude for lstm cells random uniform inititalization')
+tf.flags.DEFINE_float('trunc_norm_init_std', 1e-4, 'std of trunc norm init, used for initializing everything else')
+tf.flags.DEFINE_float('max_grad_norm', 2.0, 'for gradient clipping')
 
 # Pointer-generator or baseline model
-tf.flag.DEFINE_boolean('pointer_gen', True, 'If True, use pointer-generator model. If False, use baseline model.')
+tf.flags.DEFINE_boolean('pointer_gen', True, 'If True, use pointer-generator model. If False, use baseline model.')
 
 # Coverage hyperparameters
-tf.flag.DEFINE_boolean('coverage', False, 'Use coverage mechanism. Note, the experiments reported in the ACL paper train WITHOUT coverage until converged, and then train for a short phase WITH coverage afterwards. i.e. to reproduce the results in the ACL paper, turn this off for most of training then turn on for a short phase at the end.')
-tf.flag.DEFINE_float('cov_loss_wt', 1.0, 'Weight of coverage loss (lambda in the paper). If zero, then no incentive to minimize coverage loss.')
+tf.flags.DEFINE_boolean('coverage', False, 'Use coverage mechanism. Note, the experiments reported in the ACL paper train WITHOUT coverage until converged, and then train for a short phase WITH coverage afterwards. i.e. to reproduce the results in the ACL paper, turn this off for most of training then turn on for a short phase at the end.')
+tf.flags.DEFINE_float('cov_loss_wt', 1.0, 'Weight of coverage loss (lambda in the paper). If zero, then no incentive to minimize coverage loss.')
 
 # Utility flags, for restoring and changing checkpoints
-tf.flag.DEFINE_boolean('convert_to_coverage_model', False, 'Convert a non-coverage model to a coverage model. Turn this on and run in train mode. Your current training model will be copied to a new version (same name with _cov_init appended) that will be ready to run with coverage flag turned on, for the coverage training stage.')
-tf.flag.DEFINE_boolean('restore_best_model', False, 'Restore the best model in the eval/ dir and save it in the train/ dir, ready to be used for further training. Useful for early stopping, or if your training checkpoint has become corrupted with e.g. NaN values.')
+tf.flags.DEFINE_boolean('convert_to_coverage_model', False, 'Convert a non-coverage model to a coverage model. Turn this on and run in train mode. Your current training model will be copied to a new version (same name with _cov_init appended) that will be ready to run with coverage flag turned on, for the coverage training stage.')
+tf.flags.DEFINE_boolean('restore_best_model', False, 'Restore the best model in the eval/ dir and save it in the train/ dir, ready to be used for further training. Useful for early stopping, or if your training checkpoint has become corrupted with e.g. NaN values.')
 
 # Debugging. See https://www.tensorflow.org/programmers_guide/debugger
-tf.flag.DEFINE_boolean('debug', False, "Run in tensorflow's debug mode (watches for NaN/inf values)")
+tf.flags.DEFINE_boolean('debug', False, "Run in tensorflow's debug mode (watches for NaN/inf values)")
 
 
 
