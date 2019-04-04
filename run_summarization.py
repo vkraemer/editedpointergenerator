@@ -29,7 +29,7 @@ from decode import BeamSearchDecoder
 import util
 from tensorflow.python import debug as tf_debug
 
-FLAGS = tf.flags.FLAGS
+FLAGS = tf.app.flags.FLAGS
 
 # Where to find data
 tf.flags.DEFINE_string('data_path', '', 'Path expression to tf.Example datafiles. Can include wildcards to access multiple datafiles.')
