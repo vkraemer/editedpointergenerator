@@ -361,7 +361,7 @@ class Batcher(object):
     Args:
       example_generator: a generator of tf.Examples from file. See data.example_generator"""
     while True:
-      e = example_generator.next() # e is a tf.Example
+      e = example_generator.__next__() # e is a tf.Example
       try:
         article_text = e.features.feature['article'].bytes_list.value[0] # the article text was saved under the key 'article' in the data files
         abstract_text = e.features.feature['abstract'].bytes_list.value[0] # the abstract text was saved under the key 'abstract' in the data files
