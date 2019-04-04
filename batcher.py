@@ -316,7 +316,7 @@ class Batcher(object):
       if self._hps.mode != 'decode':
         # Get bucketing_cache_size-many batches of Examples into a list, then sort
         inputs = []
-        for _ in range(self._hps.batch_size.vaule * self._bucketing_cache_size):
+        for _ in range(self._hps.batch_size.value * self._bucketing_cache_size):
           inputs.append(self._example_queue.get())
         inputs = sorted(inputs, key=lambda inp: inp.enc_len) # sort by length of encoder sequence
 
