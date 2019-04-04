@@ -305,7 +305,7 @@ def main(unused_argv):
   tf.set_random_seed(111) # a seed value for randomness
 
   if hps.mode == 'train':
-    print "creating model..."
+    print ("creating model...")
     model = SummarizationModel(hps, vocab)
     setup_training(model, batcher)
   elif hps.mode == 'eval':
