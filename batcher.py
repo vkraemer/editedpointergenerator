@@ -16,7 +16,7 @@
 
 """This file contains code to process data into batches"""
 
-import Queue
+import queue
 from random import shuffle
 from threading import Thread
 import time
